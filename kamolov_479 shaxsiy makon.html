@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kamolovv - Shaxsiy Bulutli Xotira</title>
+    <!-- Tailwind CSS (Stitch uchun eng qulay UI kutubxonasi) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #0f172a;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen flex flex-col">
+
+    <!-- Header / Navigatsiya -->
+    <header class="border-b border-slate-100 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logotip / Sayt Nomi -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                        K
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">kamolovv</h1>
+                        <p class="text-xs text-slate-400 font-mono">kamolovv_479</p>
+                    </div>
+                </div>
+
+                <!-- Qidiruv va Yuklash tugmasi -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="document.getElementById('fileInput').click()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center space-x-2 shadow-sm">
+                        <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Fayl yuklash</span>
+                    </button>
+                    <input type="file" id="fileInput" class="hidden" multiple onchange="handleFileUpload(event)">
+                </div>
+            </div>
+            
+            <!-- Yuqoridagi Bo'limlar Navigatsiyasi (Ketma-ketlikda) -->
+            <nav class="flex space-x-1 overflow-x-auto py-2 border-t border-slate-50 no-scrollbar">
+                <button onclick="filterCategory('all')" id="btn-all" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition bg-slate-900 text-white">
+                    Barcha fayllar
+                </button>
+                <button onclick="filterCategory('presentations')" id="btn-presentations" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center space-x-1.5">
+                    <i data-lucide="presentation" class="w-4 h-4 text-slate-500"></i>
+                    <span>1. Taqdimotlar (PDF, PPTX)</span>
+                </button>
+                <button onclick="filterCategory('documents')" id="btn-documents" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center space-x-1.5">
+                    <i data-lucide="file-text" class="w-4 h-4 text-slate-500"></i>
+                    <span>2. Hujjatlar</span>
+                </button>
+                <button onclick="filterCategory('articles')" id="btn-articles" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center space-x-1.5">
+                    <i data-lucide="book-open" class="w-4 h-4 text-slate-500"></i>
+                    <span>3. Maqolalar</span>
+                </button>
+                <button onclick="filterCategory('music')" id="btn-music" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center space-x-1.5">
+                    <i data-lucide="music" class="w-4 h-4 text-slate-500"></i>
+                    <span>4. MP3 / Musiqalar</span>
+                </button>
+                <button onclick="filterCategory('video')" id="btn-video" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center space-x-1.5">
+                    <i data-lucide="video" class="w-4 h-4 text-slate-500"></i>
+                    <span>5. Videolar / MP4</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Asosiy Tarkib -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- Fayllarni Tashlash Hududi (Drag & Drop) -->
+        <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-slate-200 hover:border-slate-400 rounded-2xl p-8 mb-8 text-center cursor-pointer transition bg-slate-50/50 hover:bg-slate-50">
+            <div class="w-12 h-12 bg-white rounded-full border border-slate-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <i data-lucide="upload" class="w-6 h-6 text-slate-600"></i>
+            </div>
+            <h3 class="text-sm font-semibold text-slate-800 mb-1">Fayllarni shu yerga tashlang yoki tanlang</h3>
+            <p class="text-xs text-slate-400">PDF, PPTX, DOC, MP3, MP4 va boshqa formatlar qo'llab-quvvatlanadi</p>
+        </div>
+
+        <!-- Fayllar Ro'yxati Sarlavhasi -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 id="sectionTitle" class="text-lg font-bold text-slate-900">Barcha fayllar</h2>
+            <span id="fileCount" class="text-xs font-medium bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">0 fayl</span>
+        </div>
+
+        <!-- Fayllar Grid / Ro'yxati -->
+        <div id="fileGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <!-- Fayllar JavaScript orqali bu yerga joylanadi -->
+        </div>
+
+        <!-- Bo'sh Holat (Bo'sh bo'lganda ko'rinadi) -->
+        <div id="emptyState" class="text-center py-16">
+            <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                <i data-lucide="folder-open" class="w-8 h-8 text-slate-300"></i>
+            </div>
+            <p class="text-slate-500 font-medium text-sm">Hozircha hech qanday fayl mavjud emas</p>
+            <p class="text-xs text-slate-400 mt-1">Yuqoridagi tugma orqali birinchi faylingizni yuklang</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-100 bg-white py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            © 2026 kamolovv (kamolovv_479) - Shaxsiy bulutli fayl saqlash tizimi
+        </div>
+    </footer>
+
+    <!-- JavaScript Mantiqi -->
+    <script>
+        let filesData = [];
+        let currentCategory = 'all';
+
+        // Sahifa yuklanganda
+        window.onload = function() {
+            lucide.createIcons();
+            loadFiles();
+        };
+
+        // Kategoriya bo'yicha saralash
+        function filterCategory(category) {
+            currentCategory = category;
+            
+            // Tugmalar ko'rinishini yangilash
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+            const activeBtn = document.getElementById(`btn-${category}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-slate-900', 'text-white');
+                activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            }
+
+            // Sarlavhani o'zgartirish
+            const titles = {
+                'all': 'Barcha fayllar',
+                'presentations': 'Taqdimotlar (PDF, PPTX)',
+                'documents': 'Hujjatlar',
+                'articles': 'Maqolalar',
+                'music': 'MP3 / Musiqalar',
+                'video': 'Videolar / MP4'
+            };
+            document.getElementById('sectionTitle').innerText = titles[category] || 'Fayllar';
+
+            renderFiles();
+        }
+
+        // Fayl turini aniqlash
+        function detectCategory(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const type = file.type;
+
+            if (ext === 'pdf' || ext === 'pptx' || ext === 'ppt') return 'presentations';
+            if (ext === 'doc' || ext === 'docx' || ext === 'txt' || ext === 'xls' || ext === 'xlsx') return 'documents';
+            if (type.startsWith('audio/') || ext === 'mp3' || ext === 'wav') return 'music';
+            if (type.startsWith('video/') || ext === 'mp4' || ext === 'mkv') return 'video';
+            return 'articles'; // Odatiy bo'lim
+        }
+
+        // Fayl yuklash
+        function handleFileUpload(event) {
+            const uploadedFiles = Array.from(event.target.files);
+            
+            uploadedFiles.forEach(file => {
+                const fileObj = {
+                    id: Date.now() + Math.random().toString(36).substr(2, 9),
+                    name: file.name,
+                    size: formatBytes(file.size),
+                    category: detectCategory(file),
+                    type: file.type,
+                    url: URL.createObjectURL(file),
+                    date: new Date().toLocaleDateString('uz-UZ')
+                };
+                filesData.unshift(fileObj);
+            });
+
+            renderFiles();
+            event.target.value = '';
+        }
+
+        // Fayllarni ekranga chiqarish
+        function renderFiles() {
+            const grid = document.getElementById('fileGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            const filtered = currentCategory === 'all' 
+                ? filesData 
+                : filesData.filter(f => f.category === currentCategory);
+
+            document.getElementById('fileCount').innerText = `${filtered.length} fayl`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(file => `
+                <div class="bg-white border border-slate-100 hover:border-slate-200 rounded-2xl p-4 transition shadow-sm hover:shadow-md flex flex-col justify-between">
+                    <div>
+                        <!-- Icon va Format -->
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700">
+                                ${getIconForCategory(file.category)}
+                            </div>
+                            <span class="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md uppercase font-semibold">
+                                ${file.name.split('.').pop()}
+                            </span>
+                        </div>
+
+                        <!-- Fayl Nomi va Hajmi -->
+                        <h4 class="font-semibold text-sm text-slate-800 truncate mb-1" title="${file.name}">${file.name}</h4>
+                        <p class="text-xs text-slate-400 mb-3">${file.size} • ${file.date}</p>
+
+                        <!-- Media Pleyerlar (Audio / Video uchun) -->
+                        ${file.category === 'music' ? `<audio controls class="w-full h-8 mb-3 rounded-lg"><source src="${file.url}"></audio>` : ''}
+                        ${file.category === 'video' ? `<video controls class="w-full h-32 object-cover rounded-xl mb-3"><source src="${file.url}"></video>` : ''}
+                    </div>
+
+                    <!-- Yuklab olish va O'chirish -->
+                    <div class="flex items-center space-x-2 pt-2 border-t border-slate-50">
+                        <a href="${file.url}" download="${file.name}" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium py-2 px-3 rounded-xl transition text-center flex items-center justify-center space-x-1">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Yuklab olish</span>
+                        </a>
+                        <button onclick="deleteFile('${file.id}')" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Fayl ikonkasini olish
+        function getIconForCategory(cat) {
+            const icons = {
+                'presentations': '<i data-lucide="presentation" class="w-5 h-5"></i>',
+                'documents': '<i data-lucide="file-text" class="w-5 h-5"></i>',
+                'articles': '<i data-lucide="book-open" class="w-5 h-5"></i>',
+                'music': '<i data-lucide="music" class="w-5 h-5"></i>',
+                'video': '<i data-lucide="video" class="w-5 h-5"></i>'
+            };
+            return icons[cat] || '<i data-lucide="file" class="w-5 h-5"></i>';
+        }
+
+        // Faylni o'chirish
+        function deleteFile(id) {
+            filesData = filesData.filter(f => f.id !== id);
+            renderFiles();
+        }
+
+        // Baytlarni formatlash
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Byte';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function loadFiles() {
+            renderFiles();
+        }
+    </script>
+</body>
+</html>
